@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# A script that aliases most GNU/Linux distros' package manager
+
+if [ ! $1 ]; then echo "error: missing operation name"; exit 1; fi
+if [ ! $2 ]; then echo "error: missing package name"; exit 1; fi
+
+lsb=$(lsb_release -si)
+
+case $lsb in
+    "FreeBSD"* | "Mid"* | "Nomad"*)
+        case $1 in
+            "add") pkg add ${@:2} ;;
+            "remove") pkg remove ${@:2} ;;
+            "clean") pkg autoclean ;;
+        esac
+        ;;
+    "Debian"* | "Ubuntu"* | "Zorin"* | "Xubuntu"*)
+        case $1 in
+            "add") apt install ${@:2} ;;
+            "remove") apt remove ${@:2} ;;
+            "clean") apt clean && apt autoclean && apt autoremove ;;
+        esac
+        ;;
+    "Void"*)
+        case $1 in
+            "add") xbps-install -S ${@:2} ;;
+            "remove") xbps-remove -R ${@:2} ;;
+            "clean") xbps-remove -oO ;;
+            *) echo "error: invalid operation name" ;;
+        esac
+        ;;
+    "Arch"* | "Ark"* | "EndeavourOS"* | "Manjaro"*)
+        case $1 in
+            "add") pacman -S ${@:2} ;;
+            "remove") pacman -Rs ${@:2} ;;
+            "clean") pacman -Qdt ;;
+            *) echo "error: invalid operation name" ;;
+        esac
+        ;;
+    "Darwin"*)
+        case $1 in
+            "add") brew install ${@:2} ;;
+            "remove") brew uninstall ${@:2} ;;
+            "clean") brew cleanup --prune=1 && brew -s -n ;;
+            *) echo "error: invalid operation name" ;;
+        esac
+        ;;
+    "Redhat"* | "Red Hat"* | "rhel"* | "Rocky"* | "CentOS"*)
+        case $1 in
+            "add") dnf install ${@:2} ;;
+            "remove") dnf remove ${@:2} ;;
+            "clean") dnf clean all ;;
+            *) echo "error: invalid operation name" ;;
+        esac
+        ;;
+    *) echo "error: unsupported os (not yet implemented)" ;;
+esac
