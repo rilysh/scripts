@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# unptg - Unpack .tar.gz file and create a shortcut of that executable file
+
+# Check if user invoked the script as root or not
+if [[ $(id  -u) != 0 ]]; then
+    echo "You need to execute this script as root (use sudo or doas)"
+    exit 1
+fi
+
+# Read each lines and store them to their variables
+read -p "Shortcut file name: " shrtname
+read -p "Folder name: " folder
+read -p "Name: " name
+read -p "Comment: " comment
+read -p "Generic name: " generic
+read -p "Keywords: " keywords
+read -p "Executable path: " exepath
+read -p "Shall run with/in a terminal: " term
+read -p "Type: " progtype
+read -p "Icon: " icon
+read -p "Program category: " category
+read -p "Mime type: " mime
+
+# Move the curremt specified folder to /opt and ignore all stdout and stderr
+mv "$folder" /opt &> /dev/null
+
+# Structure of the shortcut
+cat <<EOF >/usr/share/applications/$shrtname.desktop
+[Desktop Entry]
+Version=1.0
+Name=$name
+Comment=$comment
+GenericName=$generic
+Keywords=$keywords
+Exec=/opt/$exepath
+Terminal=$term
+X-MultipleArgs=false
+Type=$progtype
+Icon=/opt/$icon
+Categories=$category
+MimeType=$mime
+StartupNotify=true
+EOF
