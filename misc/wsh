@@ -1,0 +1,3 @@
+#!/bin/bash
+## Shows the default shell for current user
+grep $USER /etc/passwd | cut -d '/' -f4- | sed -E 's/usr|bin//g;s/\/\///g;s/\///g'

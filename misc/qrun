@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# A script that execute a program silently without showing stdout or stderr on terminal.
+
+# Default message, if no arguments were passed
+[ -z $1 ] && {
+  echo "$0 [progran] [arguments]"
+  exit 1
+}
+
+# Check if the program executed as root (sudo, doas, or root account)
+[[ $(id -u) == 0 ]] && echo "Warning: Program was executed under root priviledge"
+
+# Check if there's an second argument, so work accordingly
+if [ -z $2 ]; then 
+  nohup $1 &> /dev/null &
+else
+  nohup $1 ${@:2} &> /dev/null &
+fi

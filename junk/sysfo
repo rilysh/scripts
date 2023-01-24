@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 # A tiny system information script.
 
 ## The "has" function was taken from https://github.com/dylanaraps/pfetch/blob/a906ff89680c78cec9785f3ff49ca8b272a0f96b/pfetch#L53
@@ -11,7 +11,7 @@ has() {
 os=$(uname -s)
 
 # Get distro name. Note: "lsb_release" utility may not exist in every distro. 
-distro=$(lsb_release -sd | tr -d '"')
+distro=$(grep ^PRETTY_NAME /etc/os-release | sed -e 's/PRETTY_NAME="//;s/"//g')
 
 # Get the host name
 hostname=$(cat /etc/hostname)
@@ -49,41 +49,6 @@ pkgs=$(
             nix-store -q --requisites ~/.nix-profile
          }
 		;;
-
-      (Darwin*)
-         has pkgin && pkgin list
-         has dpkg  && dpkg-query -f '.\n' -W
-      ;;
-
-      (FreeBSD* | Dragonfly* | Mid*)
-         pkg info
-      ;;
-
-      (OpenBSD*)
-         printf '%s\n' /var/db/pkg/*/
-      ;;
-
-      (NetBSD*)
-         pkg_info
-      ;;
-
-      (Haiku*)
-         printf '%s\n' /boot/system/package-links/*
-      ;;
-
-      (Minix*)
-         printf '%s\n' /usr/pkg/var/db/pkg/*/
-      ;;
-
-      (SunOS*)
-         has pkginfo && pkginfo -i
-         has pkg     && pkg list
-      ;;
-
-      (IRIX*)
-         versions -b
-      ;;
-
    esac | wc -l | tr -d "[:blank:]"
 )
 

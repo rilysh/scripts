@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# A script that aliases most GNU/Linux distros' package manager
+
+# Global variables
+distro=$(grep ^PRETTY_NAME /etc/os-release | sed -e 's/PRETTY_NAME="//;s/"//g')
+arg=$1
+arg2=$2
+pkgs=${@:2}
+
+# Check if the first argument was passed
+[ -z $1 ] && {
+    echo "error: missing operation name"
+    exit 1
+}
+
+# If the command doesn't match with any of these (add, remove, and clean)
+unknown() {
+    echo "Error: Unknown command $1"
+}
+
+# "Not implemented" for non GNU/Linux OS
+not_implemented() {
+    echo "Error: Unsupported OS (not yet implemented)"
+}
+
+# Check if package or packages were passed
+chkpkgpass() {
+    [ -z $arg2 ] && {
+        echo "Error: Missing package name"
+        exit 1
+    }
+}
+
+# Main function
+main() {
+    case $distro in
+        Void*)
+            case $arg in
+                add) chkpkgpass; xbps-install -S $pkgs ;;
+                remove) chkpkgpass; xbps-remove -R $pkgs ;;
+                clean) chkpkgpass; xbps-remove -Oo ;;
+                *) unknown $arg ;;
+            esac
+            ;;
+
+        Debi*|Ubun*|Zori*|Xubu*|Mint*|MX*|Lubu*|Pop*|Lite*|Feren*|Kali*|Van*|Watt*|watt*)
+            case $arg in
+                add) apt install $pkgs ;;
+                remove) apt remove $pkgs ;;
+                clean) apt clean && apt autoclean && apt autoremove ;;
+                *) unknown $arg ;;
+            esac
+            ;;
+
+        Arch*|Ark*|Endea*|Manja*|Xero*)
+            case $arg in
+                add) pacman -S $pkgs ;;
+                remove) pacman -Rs $pkgs ;;
+                clean) pacman -Qdt ;;
+                *) unknown $arg ;;
+            esac
+            ;;
+
+        Redhat*|rhel*|Rocky*|Cent*|Fedo*|Alma*)
+            case $arg in
+                add) dnf install $pkgs ;;
+                remove) dnf remove $pkgs ;;
+                clean) dnf clean all ;;
+                *) unknown $arg ;;
+            esac
+            ;;
+
+        open*|SUSE*|OpenSUSE*|openSUSE*)
+            case $arg in
+                add) zypper ref && zypper install $pkgs ;;
+                remove) zypper remove $pkgs ;;
+                clean) zypper clean -a ;;
+                *) unknown $arg ;;
+            esac
+            ;;
+
+        *) not_implemented ;;
+    esac
+}
+
+# Call the main function
+main
