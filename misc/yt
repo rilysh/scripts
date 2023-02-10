@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+YT="yt-dlp"
+
+[ ! $YT ] && {
+	echo "Error: yt-dlp not found"
+	exit 1
+}
+
+if [ "$1" == "--pl" ]; then
+	$YT ${@:2} --no-playlist
+else
+	$YT $@
+fi

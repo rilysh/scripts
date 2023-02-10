@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+FILES=${@:1}
+EXT=${FILES##*.}
+
+[ ! -f "$FILES" ] && {
+	echo "Error: $FILES not found"
+	exit 1
+}
+
+main() {
+	case "$EXT" in
+		tar|gz|bz2) tar xvf $FILES ;;
+		gzip) gunzip $FILES ;;
+		zip) unzip $FILES ;;
+		7z) 7z x $FILES ;;
+		rar) unrar $FILES ;;
+		cpio) cpio -idv <$FILES ;;
+		xz) xz -df $FILES ;; # Force (-f) for symbolic links
+		zstd) zstd -d $FILES ;;
+	esac
+}
+
+main
