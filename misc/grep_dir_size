@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+function main() {
+	local FILTER
+	if [ -z "$1" ]; then
+		FILTER="M"
+	else
+		FILTER="$1"
+	fi
+
+	du . -h | grep --color=auto -E "[0-9].[0-9]$FILTER"
+}
+
+main "$1"
+
